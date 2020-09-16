@@ -1,0 +1,81 @@
+// Design a cash register drawer function checkCashRegister() that accepts
+// purchase price as the first argument (price),
+// payment as the second argument (cash),
+// and cash-in-drawer (cid) as the third argument.
+
+function checkCashRegister(price, cash, cid) {
+  let neededChange = cash - price;
+  let fund = cid.reduce((a, b) => a + b[1], 0);
+
+  
+  if (fund === neededChange) return createObj('CLOSED',cid);
+
+  const convert = (arr =>{
+    return arr.map(subarr => {
+      switch (subarr[0]){
+        case "PENNY":
+          return [0.01, subarr[0], subarr[1]];
+          break;
+        case "NICKEL":
+          return [0.05, subarr[0], subarr[1]];
+          break;
+        case "DIME":
+          return [0.1, subarr[0], subarr[1]];
+          break;
+        case "QUARTER":
+          return [0.25, subarr[0], subarr[1]];
+          break;
+        case "ONE":
+          return [1, subarr[0], subarr[1]];
+          break;
+        case "FIVE":
+          return [5, subarr[0], subarr[1]];
+          break;
+        case "TEN":
+          return [10, subarr[0], subarr[1]];
+          break;
+        case "TWENTY":
+          return [20, subarr[0], subarr[1]];
+          break;
+        case "ONE HUNDRED":
+          return [100, subarr[0], subarr[1]];
+          break;
+      }
+    })
+  });
+  function createObj (status, change){
+    return {status, change};
+  }
+  const checkExistence = ((ele,num, arr) => {
+    for (let i=0;i<arr.length;i++){
+      if (arr[i].indexOf(ele) >=0){
+        return arr[i][1] += num;
+      };
+    }
+    return false;
+  })
+
+  let finalArr = []
+
+  convert(cid).reverse().forEach(arr => {
+    while (neededChange >= arr[0]){
+      if (arr[2]> 0){
+        if (checkExistence(arr[1],arr[0],finalArr)){
+          neededChange -= arr[0]
+          neededChange = neededChange.toPrecision(4)
+        }else{
+          neededChange -= arr[0]
+          finalArr.push([arr[1],arr[0]])
+        }
+        arr[2] -= arr[0]
+      }else{
+        break;
+      }
+    }
+  })
+  if(neededChange > 0) return createObj("INSUFFICIENT_FUNDS", []);
+  return createObj("OPEN",finalArr);
+}
+
+let x = checkCashRegister(19.5, 20, [["PENNY", 0.01], ["NICKEL", 0], ["DIME", 0], ["QUARTER", 0], ["ONE", 1], ["FIVE", 0], ["TEN", 0], ["TWENTY", 0], ["ONE HUNDRED", 0]]);
+console.log(x)
